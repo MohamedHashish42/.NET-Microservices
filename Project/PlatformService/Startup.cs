@@ -52,6 +52,8 @@ namespace PlatformService
             {
                 endpoints.MapControllers();
             });
+
+            DbPreparation.PrepPopulation(app, env.IsProduction());
         }
     }
 }
