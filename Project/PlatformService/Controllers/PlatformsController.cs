@@ -5,6 +5,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PlatformService.Data;
 using PlatformService.Dtos;
+using PlatformService.SyncDataServices.Http;
 using PlatformService.Models;
 
 namespace PlatformService.Controllers
@@ -15,13 +16,16 @@ namespace PlatformService.Controllers
     {
         private readonly IPlatformRepo _repository;
         private readonly IMapper _mapper;
+        private readonly IHttpCommandDataClient _httpCommandDataClient;
 
         public PlatformsController(
             IPlatformRepo repository, 
-            IMapper mapper)
+            IMapper mapper,
+            IHttpCommandDataClient httpCommandDataClient)
         {
             _repository = repository;
             _mapper = mapper;
+            _httpCommandDataClient = httpCommandDataClient;
         }
 
         [HttpGet]
@@ -47,14 +51,21 @@ namespace PlatformService.Controllers
         }
 
         [HttpPost]
-        public ActionResult<PlatformReadDto> CreatePlatform(PlatformCreateDto platformCreateDto)
+        public async Task<ActionResult<PlatformReadDto>> CreatePlatform(PlatformCreateDto platformCreateDto)
         {
             var platform = _mapper.Map<Platform>(platformCreateDto);
             _repository.CreatePlatform(platform);
             _repository.SaveChanges();
-
             var platformReadDto = _mapper.Map<PlatformReadDto>(platform);
-    
+             try 
+            {
+              await _httpCommandDataClient.SendRequestToCommandsService(platformReadDto);
+            }
+            catch(Exception ex)
+            {
+                 Console.WriteLine("Can not send request to commands service :" + ex.Message);
+            }
+            
             return CreatedAtRoute(nameof(GetPlatformById), new { Id = platformReadDto.Id}, platformReadDto);
         }
     }
