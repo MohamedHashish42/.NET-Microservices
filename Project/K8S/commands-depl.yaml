@@ -1,32 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: platforms-depl
+  name: commands-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: platformservice
+      app: commandsservice
   template:
     metadata:
       labels:
-        app: platformservice
+        app: commandsservice
     spec:
       containers:
-        - name: platformservice         
+        - name: commandsservice         
           imagePullPolicy: Never  #To use local Docker images
-          image: mohamedhashish/platformservice
+          image: mohamedhashish/commandsservice
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: platforms-clusterip-srv
+  name: commands-clusterip-srv
 spec:
   type: ClusterIP
   selector:
-    app: platformservice
+    app: commandsservice
   ports:
-  - name: platformservice
+  - name: commandsservice
     protocol: TCP
     port: 80
-    targetPort: 80     
+    targetPort: 80   
