@@ -24,9 +24,12 @@ namespace PlatformService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AppDbContext>(opt => opt.
-                                                UseInMemoryDatabase("InMem"));
+                                             UseSqlServer(Configuration.GetConnectionString("PlatformsConn")));
+
+            // services.AddDbContext<AppDbContext>(opt => opt.
+            //                                     UseInMemoryDatabase("InMem"));
             services.AddScoped<IPlatformRepo, PlatformRepo>();
-            services.AddHttpClient<IHttpCommandDataClient,HttpCommandDataClient>();
+            services.AddHttpClient<IHttpCommandDataClient, HttpCommandDataClient>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddControllers();
