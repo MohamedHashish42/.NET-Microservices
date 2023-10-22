@@ -23,6 +23,7 @@ namespace CommandsService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("InMen"));
+            services.AddScoped<ICommandRepo, CommandRepo>();
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); 
             services.AddSwaggerGen(c =>
