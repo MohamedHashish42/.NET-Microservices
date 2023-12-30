@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using PlatformService.Data;
 using PlatformService.SyncDataServices.Http;
 using Microsoft.EntityFrameworkCore;
+using PlatformService.AsyncDataServices;
 
 namespace PlatformService
 {
@@ -39,6 +40,7 @@ namespace PlatformService
             }
 
             services.AddScoped<IPlatformRepo, PlatformRepo>();
+            services.AddSingleton<IMessageBusClient, MessageBusClient>();
             services.AddHttpClient<IHttpCommandDataClient, HttpCommandDataClient>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

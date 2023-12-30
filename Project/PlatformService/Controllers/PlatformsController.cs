@@ -7,6 +7,7 @@ using PlatformService.Data;
 using PlatformService.Dtos;
 using PlatformService.SyncDataServices.Http;
 using PlatformService.Models;
+using PlatformService.AsyncDataServices;
 
 namespace PlatformService.Controllers
 {
@@ -17,15 +18,17 @@ namespace PlatformService.Controllers
         private readonly IPlatformRepo _repository;
         private readonly IMapper _mapper;
         private readonly IHttpCommandDataClient _httpCommandDataClient;
-
+        private readonly IMessageBusClient _messageBusClient;
         public PlatformsController(
-            IPlatformRepo repository, 
+            IPlatformRepo repository,
             IMapper mapper,
-            IHttpCommandDataClient httpCommandDataClient)
+            IHttpCommandDataClient httpCommandDataClient,
+            IMessageBusClient messageBusClient)
         {
             _repository = repository;
             _mapper = mapper;
             _httpCommandDataClient = httpCommandDataClient;
+            _messageBusClient = messageBusClient;
         }
 
         [HttpGet]
@@ -57,16 +60,30 @@ namespace PlatformService.Controllers
             _repository.CreatePlatform(platform);
             _repository.SaveChanges();
             var platformReadDto = _mapper.Map<PlatformReadDto>(platform);
-             try 
+
+            //Send Sync Message
+            try
             {
-              await _httpCommandDataClient.SendRequestToCommandsService(platformReadDto);
+                await _httpCommandDataClient.SendRequestToCommandsService(platformReadDto);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                 Console.WriteLine("Can not send request to commands service :" + ex.Message);
+                Console.WriteLine("Can not send request synchronously to commands service :" + ex.Message);
             }
-            
-            return CreatedAtRoute(nameof(GetPlatformById), new { Id = platformReadDto.Id}, platformReadDto);
+
+            //Send Async Message
+            try
+            {
+                var platformPublishedDto = _mapper.Map<PlatformPublishedDto>(platformReadDto);
+                platformPublishedDto.Event = "Platform_Published";
+                _messageBusClient.PublishNewPlatform(platformPublishedDto);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Can not send request asynchronously to commands service :" + ex.Message);
+            }
+
+            return CreatedAtRoute(nameof(GetPlatformById), new { Id = platformReadDto.Id }, platformReadDto);
         }
     }
 }
