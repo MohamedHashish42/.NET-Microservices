@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using CommandsService.EventProcessing;
 using CommandsService.AsyncDataServices;
+using CommandsService.SyncDataServices.Grpc;
 
 namespace CommandsService
 {
@@ -26,6 +27,7 @@ namespace CommandsService
         {
             services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("InMen"));
             services.AddScoped<ICommandRepo, CommandRepo>();
+             services.AddScoped<IPlatformDataClient, PlatformDataClient>();
             services.AddControllers();
             services.AddHostedService<MessageBusSubscriber>();
             services.AddSingleton<IEventProcessor, EventProcessor>(); 
