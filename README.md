@@ -14,14 +14,14 @@ This repository is based on the following microservices course by [Les Jackson](
 </h2>
 
 
-## Why This Repository Is HelpFul
+## Why is this Repository useful if you are watching this course or intend to watch it?
 
 - Each section of the course corresponds to a commit in this repository. This way, you can easily navigate through the different stages of the course and see the progression of the project.
 
-- You have file that contains Commands Used In Each Section of the cource  
+- You have a file that contains Commands Used In Each Section of the course  
   [file Link](./RelatedDocuments/CommandsUsedInEachSection.md)
 
-- Also you have file that contains How to run the project  
+- Also you have a file that contains How to run the project  
  [file Link](./RelatedDocuments/HowToRunTheProject.md)
 
 - Postman collection of all endpoints used in the course  
